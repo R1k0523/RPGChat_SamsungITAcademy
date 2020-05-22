@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "107555523935",
+    "firebase_url": "https://rpgchat-b5801.firebaseio.com",
+    "project_id": "rpgchat-b5801",
+    "storage_bucket": "rpgchat-b5801.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107555523935:android:8be253fb75853615d6baea",
+        "android_client_info": {
+          "package_name": "com.boringowl.rpgchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107555523935-h2aa80qv5vu2ei26ggomhff97kjunvd2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.boringowl.rpgchat",
+            "certificate_hash": "7eaa7b1c7d814b530df081a9ad517f27447b3bd3"
+          }
+        },
+        {
+          "client_id": "107555523935-7n3k0pk1p904rarn13k25i2suo7jq03d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2ab6vLIl3t9BicJQFWh53NGB4MuAvL_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107555523935-7n3k0pk1p904rarn13k25i2suo7jq03d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

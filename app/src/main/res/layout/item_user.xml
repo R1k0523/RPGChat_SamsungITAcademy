@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="7dp"
+    android:background="@drawable/background_item">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/users_profile_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/profile_image" />
+
+    <ImageView
+        android:id="@+id/user_online_status"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="52dp"
+        android:contentDescription="@string/status_image"
+        android:src="@drawable/online"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/user_profile_name"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_toEndOf="@id/users_profile_image"
+        android:text=""
+        android:textAlignment="textStart"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/user_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_profile_name"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_toEndOf="@id/users_profile_image"
+        android:text=""
+        android:textAlignment="textStart"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/request_accept_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_below="@+id/user_status"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/users_profile_image"
+        android:background="@drawable/button_common"
+        android:paddingHorizontal="10dp"
+        android:text="@string/check_request"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+
+</RelativeLayout>

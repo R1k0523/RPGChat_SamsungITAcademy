@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">RPGChat</string>
+
+    <string name="email">Email</string>
+    <string name="remember_password">Remember the password?</string>
+    <string name="reset_password">Reset password</string>
+    <string name="reset_password_instructions">Enter your email address. You will receive an letter with instructions reset your password</string>
+    <string name="cancel_chat_request">Cancel chat request</string>
+    <string name="send_request">Send request</string>
+    <string name="request_sent">Request sent</string>
+    <string name="chat_hint">Type message here</string>
+    <string name="character_button">Character button</string>
+    <string name="send_image_button">Send image button</string>
+    <string name="character_hint">Character name</string>
+    <string name="dialog_group_name">Group name</string>
+    <string name="dialog_password">password</string>
+    <string name="online">online</string>
+    <string name="offline">offline</string>
+    <string name="send_verification_code">Send verification code</string>
+    <string name="verify">Verify</string>
+    <string name="write_verification_code">Write verification code here</string>
+    <string name="write_phone">Write phone number here</string>
+    <string name="chat_password_settings">There is no password</string>
+    <string name="chat_description">This chat is used for playing DnD</string>
+    <string name="save">Save</string>
+    <string name="members">Members</string>
+    <string name="delete_group">Delete Group</string>
+    <string name="group_name">Group name</string>
+    <string name="in_search_of_players">In search of players</string>
+    <string name="search">Search</string>
+    <string name="there_is_no_status">There is no status</string>
+    <string name="dice_name">Инструкция по использованию бросков костей:</string>
+    <string name="dice_description">
+        1) Бросок 20-гранной кости:/d
+        \n\n2) Бросок многогранной кости:/d{Y} (где {Y} - количество граней)
+        \nПример: /d8
+        \n\n3) Сумма бросков костей: /{X}d (где {X} - количество костей)
+        \nПример: /4d8
+        \n\n4) Модификаторы при бросках (работают как +, так и -): /d+{M} (где {M} - значение модификатора)
+        \nПример: /4d8-3
+        \n\n5) Сумма результатов нескольких бросков (перечисляйте вышеописанные варианты бросков через +-): /d+d{Y}+{X}d{M}
+        \nПример: /4d8-3d10+2d6+4</string>
+    <string name="delete_character">Delete character</string>
+    <string name="character">Character</string>
+    <string name="features">Features</string>
+    <string name="skills">Skills</string>
+    <string name="level">Level</string>
+    <string name="characters">Characters</string>
+    <string name="no_description">No description</string>
+    <string name="cancel_request">Cancel Chat Request</string>
+    <string name="image">Image</string>
+    <string name="profile">Profile</string>
+    <string name="find_friends">Find Friends</string>
+    <string name="logout">Logout</string>
+    <string name="accept_request">Accept Chat Request</string>
+    <string name="remove_contact">Remove This Contact</string>
+    <string name="phone">Phone</string>
+    <string name="or_login_using_your">or Login Using Your</string>
+    <string name="need_new_account">Need New Account</string>
+    <string name="login">Login</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="password">Password..</string>
+    <string name="check_request">Check request</string>
+    <string name="status_image">status_image</string>
+    <string name="want_connects">wants to connect with you.</string>
+    <string name="character_name">Name</string>
+    <string name="owner">Owner</string>
+</resources>
