@@ -56,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     private String messageSenderID;
     private TextView userLastSeen;
     private DatabaseReference RootRef;
-    private EditText MessageInputText;
+    private EditText messageInputText;
     private MessageAdapter messageAdapter;
     private RecyclerView userMessagesList;
 
@@ -95,7 +95,7 @@ public class ChatActivity extends AppCompatActivity {
 
         ImageButton sendMessageButton = findViewById(R.id.send_message_button);
         ImageButton sendFilesButton = findViewById(R.id.send_files_btn);
-        MessageInputText = findViewById(R.id.input_message);
+        messageInputText = findViewById(R.id.input_message);
 
 
         messageAdapter = new MessageAdapter(ChatActivity.this, messagesList, messageReceiverID);
@@ -110,7 +110,7 @@ public class ChatActivity extends AppCompatActivity {
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendMessage();
+                sendMessage();
                 userMessagesList.scrollToPosition(Objects.requireNonNull(userMessagesList.getAdapter()).getItemCount() - 1);
             }
         });
@@ -132,7 +132,7 @@ public class ChatActivity extends AppCompatActivity {
                 dialog.show(getSupportFragmentManager(), "a");
             }
         });
-        DisplayLastSeen();
+        displayLastSeen();
     }
 
     @Override
@@ -187,7 +187,7 @@ public class ChatActivity extends AppCompatActivity {
                                 if (task.isSuccessful())
                                     toastText = "Message Sent Successfully";
                                 Toast.makeText(ChatActivity.this, toastText, Toast.LENGTH_SHORT).show();
-                                MessageInputText.setText("");
+                                messageInputText.setText("");
                                 userMessagesList.scrollToPosition(userMessagesList.getAdapter().getItemCount() - 1);
                             }
                         });
@@ -204,7 +204,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void DisplayLastSeen() {
+    private void displayLastSeen() {
         RootRef.child("Users").child(messageReceiverID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -266,8 +266,8 @@ public class ChatActivity extends AppCompatActivity {
                 });
     }
 
-    private void SendMessage() {
-        String messageText = MessageInputText.getText().toString();
+    private void sendMessage() {
+        String messageText = messageInputText.getText().toString();
 
         if (TextUtils.isEmpty(messageText)) {
             Toast.makeText(this, "first write your message...", Toast.LENGTH_SHORT).show();
@@ -296,7 +296,7 @@ public class ChatActivity extends AppCompatActivity {
             RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
-                    MessageInputText.setText("");
+                    messageInputText.setText("");
                 }
             });
             RootRef.child("Contacts").child(messageReceiverID).child(messageSenderID)

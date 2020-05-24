@@ -28,8 +28,8 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private EditText UserEmail, UserPassword;
-    private DatabaseReference UsersRef;
+    private EditText userEmail, userPassword;
+    private DatabaseReference usersRef;
     private ProgressDialog loadingBar;
 
 
@@ -39,12 +39,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         Button loginButton = findViewById(R.id.login_button);
         Button phoneLoginButton = findViewById(R.id.phone_login_button);
-        UserEmail = findViewById(R.id.login_email);
-        UserPassword = findViewById(R.id.login_password);
+        userEmail = findViewById(R.id.login_email);
+        userPassword = findViewById(R.id.login_password);
         TextView needNewAccountLink = findViewById(R.id.need_new_account_link);
         TextView forgetPasswordLink = findViewById(R.id.forget_password_link);
         loadingBar = new ProgressDialog(this);
@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         needNewAccountLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendUserToRegisterActivity();
+                sendUserToRegisterActivity();
             }
         });
 
@@ -68,21 +68,21 @@ public class LoginActivity extends AppCompatActivity {
         phoneLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendUserToPhoneLoginActivity();
+                sendUserToPhoneLoginActivity();
             }
         });
         forgetPasswordLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SendUserToResetPasswordActivity();
+                sendUserToResetPasswordActivity();
             }
         });
     }
 
 
     private void AllowUserToLogin() {
-        String email = UserEmail.getText().toString();
-        String password = UserPassword.getText().toString();
+        String email = userEmail.getText().toString();
+        String password = userPassword.getText().toString();
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
         }
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         String currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                         String deviceToken = FirebaseInstanceId.getInstance().getInstanceId().toString();
-                        UsersRef.child(currentUserId).child("device_Token").setValue(deviceToken).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        usersRef.child(currentUserId).child("device_Token").setValue(deviceToken).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
@@ -127,17 +127,17 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void SendUserToRegisterActivity() {
+    private void sendUserToRegisterActivity() {
         Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(registerIntent);
     }
 
-    private void SendUserToPhoneLoginActivity() {
+    private void sendUserToPhoneLoginActivity() {
         Intent phoneLoginIntent = new Intent(LoginActivity.this, PhoneLoginActivity.class);
         startActivity(phoneLoginIntent);
     }
 
-    private void SendUserToResetPasswordActivity() {
+    private void sendUserToResetPasswordActivity() {
         Intent resetIntent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
         startActivity(resetIntent);
     }

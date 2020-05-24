@@ -50,8 +50,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupSettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final int GALLERY_PICk = 1;
-    private DatabaseReference GroupRef;
+    private static final int GALLERY_PICK = 1;
+    private DatabaseReference groupRef;
     private String groupID, currentUserID, chatCreatorID;
     private EditText groupPassword, groupDescription, groupName;
     private CircleImageView groupImage;
@@ -72,7 +72,7 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupID);
+        groupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupID);
         groupImagesRef = FirebaseStorage.getInstance().getReference().child("Group Images");
 
         final Button updateGroupSettings = findViewById(R.id.update_settings_button);
@@ -108,14 +108,14 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    GroupRef.child("info").child("insearch").setValue("opened");
+                    groupRef.child("info").child("insearch").setValue("opened");
                 } else {
-                    GroupRef.child("info").child("insearch").setValue("closed");
+                    groupRef.child("info").child("insearch").setValue("closed");
                 }
             }
         });
 
-        GroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 chatCreatorID = dataSnapshot.child("info").child("creator").getValue().toString();
@@ -141,13 +141,13 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
             }
         });
 
-        RetrieveGroupInfo();
+        retrieveGroupInfo();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        SendUserToGroupChatActivity();
+        sendUserToGroupChatActivity();
     }
 
     @Override
@@ -157,23 +157,22 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
                 Intent galleryIntent = new Intent();
                 galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                 galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent, GALLERY_PICk);
+                startActivityForResult(galleryIntent, GALLERY_PICK);
                 break;
             case R.id.update_settings_button:
-                UpdateSettings();
+                updateSettings();
                 break;
             case R.id.delete_button:
-                DeleteGroup();
+                deleteGroup();
                 break;
             case R.id.add_character_button:
-                RequestNewCharacter();
+                requestNewCharacter();
                 break;
         }
     }
 
-    private void CreateNewCharacter(final String characterName) {
+    private void createNewCharacter(final String characterName) {
         final DatabaseReference membersRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupID).child("Characters").push();
-        String charKey = membersRef.getKey();
 
         membersRef.child("info").child("name").setValue(characterName);
         membersRef.child("info").child("owner").setValue(currentUserID);
@@ -187,10 +186,10 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
             membersRef.child("Features").child(characterfeature).setValue("0");
         for (String characterskill : characterskills)
             membersRef.child("Skills").child(characterskill).setValue("0");
-        RetrieveGroupInfo();
+        retrieveGroupInfo();
     }
 
-    private void RequestNewCharacter() {
+    private void requestNewCharacter() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialog);
         builder.setTitle("Create Character");
         final View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_text, null);
@@ -206,7 +205,7 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
                         if (TextUtils.isEmpty(characterName)) {
                             Toast.makeText(GroupSettingsActivity.this, "Please check your input data...", Toast.LENGTH_SHORT).show();
                         } else {
-                            CreateNewCharacter(characterName);
+                            createNewCharacter(characterName);
                             dialogInterface.dismiss();
                         }
                     }
@@ -221,7 +220,7 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
         builder.show();
     }
 
-    private void DeleteGroup() {
+    private void deleteGroup() {
         CharSequence[] options = new CharSequence[]{"Yes", "No"};
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(GroupSettingsActivity.this);
@@ -232,8 +231,8 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
             public void onClick(DialogInterface dialogInterface, int i) {
                 switch (i) {
                     case 0:
-                        SendUserToMainActivity();
-                        GroupRef.removeValue();
+                        sendUserToMainActivity();
+                        groupRef.removeValue();
                         break;
                     case 1:
                         break;
@@ -243,20 +242,20 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
         builder.show();
     }
 
-    private void SendUserToMainActivity() {
+    private void sendUserToMainActivity() {
         Intent mainIntent = new Intent(GroupSettingsActivity.this, MainActivity.class);
         startActivity(mainIntent);
         finish();
     }
 
-    private void SendUserToGroupChatActivity() {
+    private void sendUserToGroupChatActivity() {
         Intent groupIntent = new Intent(GroupSettingsActivity.this, GroupChatActivity.class);
         groupIntent.putExtra("groupID", groupID);
         startActivity(groupIntent);
         finish();
     }
 
-    private void UpdateSettings() {
+    private void updateSettings() {
         String setName = groupName.getText().toString();
         String setPassword = groupPassword.getText().toString();
         String setDescription = groupDescription.getText().toString();
@@ -266,11 +265,11 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
         profileMap.put("password", setPassword);
         profileMap.put("description", setDescription);
 
-        GroupRef.child("info").updateChildren(profileMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        groupRef.child("info").updateChildren(profileMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    SendUserToGroupChatActivity();
+                    sendUserToGroupChatActivity();
                     Toast.makeText(GroupSettingsActivity.this, "Group Updated Successfully...", Toast.LENGTH_SHORT).show();
                 } else {
                     String message = task.getException().toString();
@@ -280,8 +279,8 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void RetrieveGroupInfo() {
-        GroupRef.child("info").addValueEventListener(new ValueEventListener() {
+    private void retrieveGroupInfo() {
+        groupRef.child("info").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChildren()) {
@@ -315,7 +314,7 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
     protected void onStart() {
         super.onStart();
         TimeHandler.update("online");
-        GroupRef.addValueEventListener(new ValueEventListener() {
+        groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -348,7 +347,7 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == GALLERY_PICk && resultCode == RESULT_OK && data != null) {
+        if (requestCode == GALLERY_PICK && resultCode == RESULT_OK && data != null) {
             CropImage.activity()
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setAspectRatio(1, 1)
@@ -381,7 +380,7 @@ public class GroupSettingsActivity extends AppCompatActivity implements View.OnC
                                 public void onSuccess(Uri uri) {
                                     String downloadedUrl = uri.toString();
 
-                                    GroupRef.child("info").child("image").setValue(downloadedUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    groupRef.child("info").child("image").setValue(downloadedUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {

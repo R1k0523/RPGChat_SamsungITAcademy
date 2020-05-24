@@ -47,21 +47,21 @@ public class RegisterActivity extends AppCompatActivity {
         alreadyHaveAccountLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendUserToLoginActivity();
+                sendUserToLoginActivity();
             }
         });
 
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CreateNewAccount();
+                createNewAccount();
             }
         });
 
     }
 
 
-    private void CreateNewAccount() {
+    private void createNewAccount() {
         String email = userEmail.getText().toString();
         String password = userPassword.getText().toString();
 
@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                         rootRef.child("Users").child(currentUserID).setValue("");
                         rootRef.child("Users").child(currentUserID).child("device_token").setValue(deviceToken);
                         loadingBar.dismiss();
-                        SendUserToMainActivity();
+                        sendUserToMainActivity();
                         Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
                     } else {
                         String message = Objects.requireNonNull(task.getException()).toString();
@@ -96,12 +96,12 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void SendUserToMainActivity() {
+    private void sendUserToMainActivity() {
         Intent loginIntent = new Intent(RegisterActivity.this, ProfileActivity.class);
         startActivity(loginIntent);
     }
 
-    private void SendUserToLoginActivity() {
+    private void sendUserToLoginActivity() {
         Intent mainIntent = new Intent(RegisterActivity.this, LoginActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);

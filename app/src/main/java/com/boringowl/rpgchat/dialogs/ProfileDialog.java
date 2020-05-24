@@ -108,7 +108,7 @@ public class ProfileDialog extends DialogFragment {
                         declineButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                CancelChatRequest();
+                                cancelChatRequest();
                             }
                         });
                     }
@@ -140,23 +140,23 @@ public class ProfileDialog extends DialogFragment {
                 sendRequestButton.setEnabled(false);
                 switch (currentState) {
                     case "new":
-                        SendChatRequest();
+                        sendChatRequest();
                         break;
                     case "request_sent":
-                        CancelChatRequest();
+                        cancelChatRequest();
                         break;
                     case "request_received":
-                        AcceptChatRequest();
+                        acceptChatRequest();
                         break;
                     case "friends":
-                        RemoveSpecificContact();
+                        removeSpecificContact();
                         break;
                 }
             }
         });
     }
 
-    private void RemoveSpecificContact() {
+    private void removeSpecificContact() {
         contactsRef.child(senderUserID).child(receiverUserID)
                 .removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -181,7 +181,7 @@ public class ProfileDialog extends DialogFragment {
         });
     }
 
-    private void AcceptChatRequest() {
+    private void acceptChatRequest() {
         contactsRef.child(senderUserID).child(receiverUserID)
                 .child("Contacts").setValue("Saved")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -215,7 +215,7 @@ public class ProfileDialog extends DialogFragment {
                 });
     }
 
-    private void SendChatRequest() {
+    private void sendChatRequest() {
         chatRequestRef.child(senderUserID).child(receiverUserID)
             .child("request_type").setValue("sent")
             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -252,7 +252,7 @@ public class ProfileDialog extends DialogFragment {
             });
     }
 
-    private void CancelChatRequest() {
+    private void cancelChatRequest() {
         chatRequestRef.child(senderUserID).child(receiverUserID)
                 .removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

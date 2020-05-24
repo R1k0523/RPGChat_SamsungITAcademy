@@ -40,12 +40,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private static final int GALLERY_PICk = 1;
-    private DatabaseReference RootRef;
+    private static final int GALLERY_PICK = 1;
+    private DatabaseReference rootRef;
     private String currentUserID;
     private EditText userName, userStatus;
     private CircleImageView userProfileImage;
-    private StorageReference UserProfileImagesRef;
+    private StorageReference userProfileImagesRef;
     private ProgressDialog loadingBar;
     private FirebaseAuth mAuth;
 
@@ -56,8 +56,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
-        UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        userProfileImagesRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
         Button updateAccountSettings = findViewById(R.id.update_settings_button);
         final Button deleteButton = findViewById(R.id.delete_button);
@@ -71,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
         setSupportActionBar(settingsToolBar);
         getSupportActionBar().setTitle("Account Settings");
 
-        RootRef.child("Users").child(currentUserID).addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.child("Users").child(currentUserID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.hasChild("name"))
@@ -86,11 +86,11 @@ public class ProfileActivity extends AppCompatActivity {
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UpdateSettings();
+                updateSettings();
             }
         });
 
-        RetrieveUserInfo();
+        retrieveUserInfo();
 
         userProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +98,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Intent galleryIntent = new Intent();
                 galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                 galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent, GALLERY_PICk);
+                startActivityForResult(galleryIntent, GALLERY_PICK);
             }
         });
 
@@ -112,7 +112,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void deleteAccount() {
         final FirebaseUser currentUser = mAuth.getCurrentUser();
-        RootRef.addValueEventListener(new ValueEventListener() {
+        rootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.child("Chat Requests").getChildren()) {
@@ -160,7 +160,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        RootRef.child("Users").child(currentUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+        rootRef.child("Users").child(currentUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -168,7 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful())
-                                SendUserToLoginActivity();
+                                sendUserToLoginActivity();
                             else
                                 Toast.makeText(ProfileActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -178,14 +178,14 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void SendUserToLoginActivity() {
+    private void sendUserToLoginActivity() {
         Intent loginIntent = new Intent(ProfileActivity.this, LoginActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();
     }
 
-    private void UpdateSettings() {
+    private void updateSettings() {
         String setUserName = userName.getText().toString();
         String setStatus = userStatus.getText().toString();
         if (TextUtils.isEmpty(setUserName)) {
@@ -199,11 +199,11 @@ public class ProfileActivity extends AppCompatActivity {
             profileMap.put("searchname", setUserName.toLowerCase());
             profileMap.put("status", setStatus);
 
-            RootRef.child("Users").child(currentUserID).updateChildren(profileMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            rootRef.child("Users").child(currentUserID).updateChildren(profileMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        SendUserToMainActivity();
+                        sendUserToMainActivity();
                         Toast.makeText(ProfileActivity.this, "Profile Updated Successfully...", Toast.LENGTH_SHORT).show();
                     } else {
                         String message = Objects.requireNonNull(task.getException()).toString();
@@ -214,8 +214,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void RetrieveUserInfo() {
-        RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+    private void retrieveUserInfo() {
+        rootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -245,7 +245,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void SendUserToMainActivity() {
+    private void sendUserToMainActivity() {
         Intent mainIntent = new Intent(ProfileActivity.this, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
@@ -257,7 +257,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == GALLERY_PICk && resultCode == RESULT_OK && data != null) {
+        if (requestCode == GALLERY_PICK && resultCode == RESULT_OK && data != null) {
             CropImage.activity()
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setAspectRatio(1, 1)
@@ -277,7 +277,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Uri resultUri = result.getUri();
 
 
-                final StorageReference filePath = UserProfileImagesRef.child(currentUserID + ".jpg");
+                final StorageReference filePath = userProfileImagesRef.child(currentUserID + ".jpg");
 
                 filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -290,7 +290,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                     String downloadedUrl = uri.toString();
 
-                                    RootRef.child("Users").child(currentUserID).child("image")
+                                    rootRef.child("Users").child(currentUserID).child("image")
                                             .setValue(downloadedUrl)
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override

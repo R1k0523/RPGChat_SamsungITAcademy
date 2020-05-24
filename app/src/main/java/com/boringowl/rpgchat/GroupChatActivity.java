@@ -50,8 +50,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class GroupChatActivity extends AppCompatActivity {
     private final List<Messages> messagesList = new ArrayList<>();
     private String groupID, groupName, messageSenderID, messageSender, chatCreator, chatImageURL;
-    private DatabaseReference RootRef;
-    private EditText MessageInputText, CharacterText;
+    private DatabaseReference rootRef;
+    private EditText messageInputText, characterText;
     private CircleImageView chatImage;
     private GroupMessageAdapter messageAdapter;
     private RecyclerView userMessagesList;
@@ -65,7 +65,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         groupID = Objects.requireNonNull(Objects.requireNonNull(getIntent().getExtras()).get("groupID")).toString();
 
@@ -84,7 +84,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
         final TextView groupNameText = findViewById(R.id.chat_name);
         groupNameText.setTextSize(24);
-        RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messageSender = Objects.requireNonNull(dataSnapshot.child("Users").child(messageSenderID).child("name").getValue()).toString();
@@ -109,8 +109,8 @@ public class GroupChatActivity extends AppCompatActivity {
         ImageButton sendFilesButton = findViewById(R.id.send_files_btn);
         ImageButton characterButton = findViewById(R.id.character_btn);
         ImageButton helpButton = findViewById(R.id.help_button);
-        MessageInputText = findViewById(R.id.input_message);
-        CharacterText = findViewById(R.id.input_character);
+        messageInputText = findViewById(R.id.input_message);
+        characterText = findViewById(R.id.input_character);
         chatImage = findViewById(R.id.chat_image);
 
         messageAdapter = new GroupMessageAdapter(GroupChatActivity.this, messagesList, groupID);
@@ -126,24 +126,24 @@ public class GroupChatActivity extends AppCompatActivity {
         characterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (CharacterText.getVisibility() == View.GONE) {
-                    CharacterText.setVisibility(View.VISIBLE);
+                if (characterText.getVisibility() == View.GONE) {
+                    characterText.setVisibility(View.VISIBLE);
                 } else
-                    CharacterText.setVisibility(View.GONE);
+                    characterText.setVisibility(View.GONE);
             }
         });
 
         chatImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SendUserToGroupSettingsActivity();
+                sendUserToGroupSettingsActivity();
             }
         });
 
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendMessage();
+                sendMessage();
                 userMessagesList.scrollToPosition(Objects.requireNonNull(userMessagesList.getAdapter()).getItemCount() - 1);
             }
         });
@@ -170,7 +170,7 @@ public class GroupChatActivity extends AppCompatActivity {
         });
     }
 
-    private void SendUserToGroupSettingsActivity() {
+    private void sendUserToGroupSettingsActivity() {
         Intent groupSettingsIntent = new Intent(GroupChatActivity.this, GroupSettingsActivity.class);
         groupSettingsIntent.putExtra("groupID", groupID);
         startActivity(groupSettingsIntent);
@@ -187,7 +187,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Files");
                 final String groupRef = "Groups/" + groupID + "/Messages/";
 
-                DatabaseReference messageKeyRef = RootRef.child("Groups")
+                DatabaseReference messageKeyRef = rootRef.child("Groups")
                         .child(groupID).child("Messages").push();
 
                 final String messagePushID = messageKeyRef.getKey();
@@ -207,7 +207,7 @@ public class GroupChatActivity extends AppCompatActivity {
                         Uri downloadUrl = task.getResult();
                         myUrl = downloadUrl.toString();
 
-                        String characterName = CharacterText.getText().toString();
+                        String characterName = characterText.getText().toString();
                         if (TextUtils.isEmpty(characterName)) {
                             characterName = messageSender;
                         }
@@ -224,14 +224,14 @@ public class GroupChatActivity extends AppCompatActivity {
                         Map<String, Object> messageBodyDetails = new HashMap<>();
                         messageBodyDetails.put(groupRef + "/" + messagePushID, messageTextBody);
 
-                        RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
+                        rootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
                             @Override
                             public void onComplete(@NonNull Task task) {
-                                MessageInputText.setText("");
+                                messageInputText.setText("");
                                 userMessagesList.scrollToPosition(userMessagesList.getAdapter().getItemCount() - 1);
                             }
                         });
-                        RootRef.child("Groups").child(groupID).child("info").child("lastmessage").setValue(TimeHandler.getLastTime());
+                        rootRef.child("Groups").child(groupID).child("info").child("lastmessage").setValue(TimeHandler.getLastTime());
                     }
                 });
 
@@ -245,7 +245,7 @@ public class GroupChatActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         TimeHandler.update("online");
-        RootRef.child("Groups").child(groupID).child("Messages")
+        rootRef.child("Groups").child(groupID).child("Messages")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -269,9 +269,9 @@ public class GroupChatActivity extends AppCompatActivity {
                 });
     }
 
-    private void SendMessage() {
-        String messageText = MessageInputText.getText().toString();
-        String characterName = CharacterText.getText().toString();
+    private void sendMessage() {
+        String messageText = messageInputText.getText().toString();
+        String characterName = characterText.getText().toString();
         if (TextUtils.isEmpty(characterName)) {
             characterName = messageSender;
         }
@@ -281,7 +281,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
             String groupRef = "Groups/" + groupID + "/Messages/";
 
-            DatabaseReference groupMessageKeyRef = RootRef.child("Groups")
+            DatabaseReference groupMessageKeyRef = rootRef.child("Groups")
                     .child(groupID).child("Messages").push();
 
             String messagePushID = groupMessageKeyRef.getKey();
@@ -300,13 +300,13 @@ public class GroupChatActivity extends AppCompatActivity {
             Map<String, Object> messageBodyDetails = new HashMap<>();
             messageBodyDetails.put(groupRef + "/" + messagePushID, messageTextBody);
 
-            RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
+            rootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
-                    MessageInputText.setText("");
+                    messageInputText.setText("");
                 }
             });
-            RootRef.child("Groups").child(groupID).child("info").child("lastmessage").setValue(TimeHandler.getLastTime());
+            rootRef.child("Groups").child(groupID).child("info").child("lastmessage").setValue(TimeHandler.getLastTime());
             userMessagesList.scrollToPosition(userMessagesList.getAdapter().getItemCount() - 1);
         }
     }

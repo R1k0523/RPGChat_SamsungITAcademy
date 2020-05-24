@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
-    private DatabaseReference RootRef;
+    private DatabaseReference rootRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        RootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         Toolbar mToolbar = findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
@@ -57,10 +57,10 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         super.onStart();
         if (currentUser == null) {
-            SendUserToLoginActivity();
+            sendUserToLoginActivity();
         } else {
             TimeHandler.update("online");
-            VerifyUserExistence();
+            verifyUserExistence();
         }
     }
 
@@ -76,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
         TimeHandler.update("online");
     }
 
-    private void VerifyUserExistence() {
+    private void verifyUserExistence() {
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+        rootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!(dataSnapshot.child("name").exists())) {
-                    SendUserToSettingsActivity();
+                    sendUserToSettingsActivity();
                 }
             }
 
@@ -107,33 +107,33 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.main_settings_option:
-                SendUserToSettingsActivity();
+                sendUserToSettingsActivity();
                 break;
             case R.id.main_logout_option:
                 TimeHandler.update("offline");
                 mAuth.signOut();
-                SendUserToLoginActivity();
+                sendUserToLoginActivity();
                 break;
             case R.id.main_find_friends_option:
-                SendUserToFindFriendsActivity();
+                sendUserToFindFriendsActivity();
                 break;
         }
         return true;
     }
 
-    private void SendUserToLoginActivity() {
+    private void sendUserToLoginActivity() {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();
     }
 
-    private void SendUserToSettingsActivity() {
+    private void sendUserToSettingsActivity() {
         Intent settingsIntent = new Intent(MainActivity.this, ProfileActivity.class);
         startActivity(settingsIntent);
     }
 
-    private void SendUserToFindFriendsActivity() {
+    private void sendUserToFindFriendsActivity() {
         Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
         startActivity(findFriendsIntent);
     }

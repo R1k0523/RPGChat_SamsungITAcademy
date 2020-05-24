@@ -26,9 +26,9 @@ import java.util.Objects;
 
 public class FindFriendsActivity extends AppCompatActivity {
     private EditText searchText;
-    private RecyclerView FindFriendsRecyclerList;
-    private DatabaseReference UsersRef;
-    private List<Contacts> list_of_people;
+    private RecyclerView findFriendsRecycler;
+    private DatabaseReference usersRef;
+    private List<Contacts> listOfPeople;
     private FindFriendsAdapter adapter;
 
     @Override
@@ -36,11 +36,11 @@ public class FindFriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_friends);
 
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        FindFriendsRecyclerList = findViewById(R.id.find_friends_recycler_list);
+        findFriendsRecycler = findViewById(R.id.find_friends_recycler_list);
         searchText = findViewById(R.id.search_chats);
-        FindFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
+        findFriendsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         Toolbar mToolbar = findViewById(R.id.find_friends_toolbar);
         setSupportActionBar(mToolbar);
@@ -48,7 +48,7 @@ public class FindFriendsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Find Friends");
 
-        list_of_people = new ArrayList<>();
+        listOfPeople = new ArrayList<>();
 
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -71,23 +71,23 @@ public class FindFriendsActivity extends AppCompatActivity {
         super.onStart();
 
 
-        RetrieveAndDisplayGroups();
+        retrieveAndDisplayGroups();
     }
 
-    private void RetrieveAndDisplayGroups() {
+    private void retrieveAndDisplayGroups() {
 
-        UsersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (searchText.getText().toString().equals("")) {
-                    list_of_people.clear();
+                    listOfPeople.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Contacts contact = snapshot.getValue(Contacts.class);
                         if (snapshot.hasChild("name"))
-                            list_of_people.add(contact);
+                            listOfPeople.add(contact);
                     }
-                    adapter = new FindFriendsAdapter(list_of_people, getSupportFragmentManager());
-                    FindFriendsRecyclerList.setAdapter(adapter);
+                    adapter = new FindFriendsAdapter(listOfPeople, getSupportFragmentManager());
+                    findFriendsRecycler.setAdapter(adapter);
                 }
             }
 
@@ -105,13 +105,13 @@ public class FindFriendsActivity extends AppCompatActivity {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                list_of_people.clear();
+                listOfPeople.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Contacts contact = snapshot.getValue(Contacts.class);
-                    list_of_people.add(contact);
+                    listOfPeople.add(contact);
                 }
-                adapter = new FindFriendsAdapter(list_of_people, getSupportFragmentManager());
-                FindFriendsRecyclerList.setAdapter(adapter);
+                adapter = new FindFriendsAdapter(listOfPeople, getSupportFragmentManager());
+                findFriendsRecycler.setAdapter(adapter);
             }
 
             @Override

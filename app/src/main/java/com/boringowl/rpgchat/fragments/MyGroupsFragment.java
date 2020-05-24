@@ -35,12 +35,12 @@ import java.util.List;
 
 
 public class MyGroupsFragment extends Fragment {
-    private RecyclerView recycler_view;
+    private RecyclerView recyclerView;
     private MyGroupsAdapter adapter;
     private EditText searchText;
 
-    private List<String> list_of_groups;
-    private DatabaseReference GroupRef;
+    private List<String> listOfGroups;
+    private DatabaseReference groupRef;
     private String currentUserID = "";
 
 
@@ -49,23 +49,23 @@ public class MyGroupsFragment extends Fragment {
 
         View groupFragmentView = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
+        groupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
         searchText = groupFragmentView.findViewById(R.id.search_chats);
 
         FloatingActionButton addGroupButton = groupFragmentView.findViewById(R.id.add_group_btn);
-        recycler_view = groupFragmentView.findViewById(R.id.groups_list);
+        recyclerView = groupFragmentView.findViewById(R.id.groups_list);
 
-        recycler_view.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
-        recycler_view.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(linearLayoutManager);
 
-        list_of_groups = new ArrayList<>();
+        listOfGroups = new ArrayList<>();
 
-        RetrieveAndDisplayGroups();
+        retrieveAndDisplayGroups();
 
         addGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +100,7 @@ public class MyGroupsFragment extends Fragment {
         groupRef.child("info").child("insearch").setValue("closed");
         groupRef.child("info").child("lastmessage").setValue(TimeHandler.getLastTime());
         groupRef.child("Members").child(currentUserID).setValue("");
-        RetrieveAndDisplayGroups();
+        retrieveAndDisplayGroups();
     }
 
 
@@ -148,14 +148,14 @@ public class MyGroupsFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                list_of_groups.clear();
+                listOfGroups.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     if (snapshot.child("Members").hasChild(currentUserID))
-                        list_of_groups.add(snapshot.getKey());
+                        listOfGroups.add(snapshot.getKey());
                 }
-                adapter = new MyGroupsAdapter(getContext(), list_of_groups);
-                recycler_view.setAdapter(adapter);
-                recycler_view.scrollToPosition(recycler_view.getAdapter().getItemCount() - 1);
+                adapter = new MyGroupsAdapter(getContext(), listOfGroups);
+                recyclerView.setAdapter(adapter);
+                recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
             }
 
             @Override
@@ -164,18 +164,18 @@ public class MyGroupsFragment extends Fragment {
         });
     }
 
-    private void RetrieveAndDisplayGroups() {
-        GroupRef.orderByChild("info/lastmessage").addValueEventListener(new ValueEventListener() {
+    private void retrieveAndDisplayGroups() {
+        groupRef.orderByChild("info/lastmessage").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                list_of_groups.clear();
+                listOfGroups.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     if (snapshot.child("Members").hasChild(currentUserID))
-                        list_of_groups.add(snapshot.getKey());
+                        listOfGroups.add(snapshot.getKey());
                 }
-                adapter = new MyGroupsAdapter(getContext(), list_of_groups);
-                recycler_view.setAdapter(adapter);
-                recycler_view.scrollToPosition(recycler_view.getAdapter().getItemCount() - 1);
+                adapter = new MyGroupsAdapter(getContext(), listOfGroups);
+                recyclerView.setAdapter(adapter);
+                recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
             }
 
             @Override

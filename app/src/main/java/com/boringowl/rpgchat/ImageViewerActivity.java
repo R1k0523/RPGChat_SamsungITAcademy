@@ -32,10 +32,4 @@ public class ImageViewerActivity extends AppCompatActivity {
         super.onResume();
         TimeHandler.update("online");
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        TimeHandler.update("offline");
-    }
 }

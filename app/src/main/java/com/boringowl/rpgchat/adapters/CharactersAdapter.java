@@ -25,7 +25,7 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Gr
     private List<String> charactersList;
     private Context mContext;
     private String groupId;
-    private DatabaseReference UsersRef, GroupRef;
+    private DatabaseReference usersRef, groupRef;
 
     public CharactersAdapter(Context mContext, List<String> charactersList, String groupId) {
         this.mContext = mContext;
@@ -38,8 +38,8 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Gr
     public CharactersAdapter.GroupsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_character, viewGroup, false);
 
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupId);
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        groupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupId);
 
         return new GroupsViewHolder(view);
     }
@@ -48,7 +48,7 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Gr
     public void onBindViewHolder(@NonNull final CharactersAdapter.GroupsViewHolder holder, final int position) {
         final String characterId = charactersList.get(position);
 
-        GroupRef.child("Characters").child(characterId).child("info").addValueEventListener(new ValueEventListener() {
+        groupRef.child("Characters").child(characterId).child("info").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("name")) {
@@ -59,7 +59,7 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Gr
                 }
                 if (dataSnapshot.hasChild("owner")) {
                     final String ownerId = Objects.requireNonNull(dataSnapshot.child("owner").getValue()).toString();
-                    UsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.hasChild(ownerId)) {

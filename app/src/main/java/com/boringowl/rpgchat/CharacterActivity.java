@@ -36,7 +36,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
     private EditText nameText, levelText;
     private TextView ownerText;
     private Button saveButton, deleteButton;
-    private DatabaseReference characterRef, UsersRef;
+    private DatabaseReference characterRef, usersRef;
     private String currentUserID;
     private String ownerID;
 
@@ -55,7 +55,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         characterRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupID).child("Characters").child(characterName);
 
         deleteButton = findViewById(R.id.delete_button);
@@ -106,7 +106,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
                     ownerID = dataSnapshot.child("owner").getValue().toString();
                     if (!ownerID.equals(currentUserID))
                         closeForGuest();
-                    UsersRef.child(ownerID).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                    usersRef.child(ownerID).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists())
@@ -126,7 +126,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-    private void UpdateCharacter() {
+    private void updateCharacter() {
         String setName = nameText.getText().toString();
         String setLevel = levelText.getText().toString();
 
@@ -153,7 +153,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.save_button:
-                UpdateCharacter();
+                updateCharacter();
                 break;
             case R.id.delete_button:
                 characterRef.removeValue();
@@ -215,7 +215,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
                             @Override
                             public void onClick(View v) {
                                 if (currentUserID.equals(ownerID)) {
-                                    RequestChange(statType, key, value);
+                                    requestChange(statType, key, value);
                                 }
                             }
                         });
@@ -228,7 +228,7 @@ public class CharacterActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-    private void RequestChange(final String statType, final String key, final String oldValue) {
+    private void requestChange(final String statType, final String key, final String oldValue) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialog);
         final View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_text, null);
         final EditText valueText = dialogView.findViewById(R.id.value);

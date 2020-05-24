@@ -30,7 +30,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.GroupsVi
     private List<String> membersList;
     private Context mContext;
     private String currentUserID, groupId, chatCreatorId;
-    private DatabaseReference UsersRef, GroupRef;
+    private DatabaseReference usersRef, groupRef;
 
     public MembersAdapter(Context mContext, List<String> membersList, String currentUserID, String groupId, String chatCreatorId) {
         this.mContext = mContext;
@@ -45,8 +45,8 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.GroupsVi
     public MembersAdapter.GroupsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_member, viewGroup, false);
 
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupId);
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        groupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(groupId);
 
         return new GroupsViewHolder(view);
     }
@@ -55,7 +55,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.GroupsVi
     public void onBindViewHolder(@NonNull final MembersAdapter.GroupsViewHolder holder, final int position) {
         final String usersIDs = membersList.get(position);
 
-        UsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
+        usersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("image")) {
@@ -80,7 +80,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.GroupsVi
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    GroupRef.child("Members").child(usersIDs).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    groupRef.child("Members").child(usersIDs).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(mContext, "User deleted", Toast.LENGTH_SHORT).show();
